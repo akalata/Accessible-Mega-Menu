@@ -454,22 +454,33 @@ limitations under the License.
                 break;
             case Keyboard.DOWN:
                 event.preventDefault();
-                if (isTopNavItem) {
+
+                // Only allow DOWN when changing menu levels
+                if (target.next('ul').length === 1) {
+                    found = (target.next('ul').children(':first-child').children('a').focus().length === 1);
+                }
+
+                /*if (isTopNavItem) {
                     _togglePanel.call(that, event);
                     found = (topli.find('.' + settings.panelClass + ' :tabbable:first').focus().length === 1);
                 } else {
                     found = (tabbables.filter(':gt(' + tabbables.index(target) + '):first').focus().length === 1);
                 }
-
                 if (!found && window.opera && opera.toString() === "[object Opera]" && (event.ctrlKey || event.metaKey)) {
                     tabbables = $(':tabbable');
                     i = tabbables.index(target);
                     found = ($(':tabbable:gt(' + $(':tabbable').index(target) + '):first').focus().length === 1);
-                }
+                }*/
                 break;
             case Keyboard.UP:
                 event.preventDefault();
-                if (isTopNavItem && target.hasClass(settings.openClass)) {
+
+                // Only allow UP when changing menu levels
+                if (target.parent('li').parent('ul').prev('a').length === 1) {
+                    found = (target.parent('li').parent('ul').prev('a').focus().length === 1);
+                }
+
+                /*if (isTopNavItem && target.hasClass(settings.openClass)) {
                     _togglePanel.call(that, event, true);
                     next = topnavitems.filter(':lt(' + topnavitems.index(topli) + '):last');
                     if (next.children('.' + settings.panelClass).length) {
@@ -489,10 +500,22 @@ limitations under the License.
                     tabbables = $(':tabbable');
                     i = tabbables.index(target);
                     found = ($(':tabbable:lt(' + $(':tabbable').index(target) + '):first').focus().length === 1);
-                }
+                }*/
                 break;
             case Keyboard.RIGHT:
                 event.preventDefault();
+
+                // Only allow RIGHT when navigating siblings
+                // Children and subchildren
+                if (target.parent('li').next('li').length === 1) {
+                    found = (target.parent('li').next('li').children('a').focus().length === 1);
+                }
+                // Parents
+                else if (target.parent('li').parent('ul').next('ul').children('li:first-child').children('a').length === 1) {
+                    found = (target.parent('li').parent('ul').next('ul').children('li:first-child').children('a').focus().length === 1);
+                }
+
+                /*
                 if (isTopNavItem) {
                     found = (topnavitems.filter(':gt(' + topnavitems.index(topli) + '):first').find(':tabbable:first').focus().length === 1);
                 } else {
@@ -504,10 +527,23 @@ limitations under the License.
                     if (!found) {
                         found = (topli.find(':tabbable:first').focus().length === 1);
                     }
-                }
+                }*/
+
                 break;
             case Keyboard.LEFT:
                 event.preventDefault();
+
+                // Only allow LEFT when navigating siblings
+                // Children and subchildren
+                if (target.parent('li').prev('li').length === 1) {
+                    found = (target.parent('li').prev('li').children('a').focus().length === 1);
+                }
+                // Parents
+                else if (target.parent('li').parent('ul').prev('ul').children('li:first-child').children('a').length === 1) {
+                    found = (target.parent('li').parent('ul').prev('ul').children('li:first-child').children('a').focus().length === 1);
+                }
+
+                /*
                 if (isTopNavItem) {
                     found = (topnavitems.filter(':lt(' + topnavitems.index(topli) + '):last').find(':tabbable:first').focus().length === 1);
                 } else {
@@ -519,9 +555,10 @@ limitations under the License.
                     if (!found) {
                         found = (topli.find(':tabbable:first').focus().length === 1);
                     }
-                }
+                }*/
+
                 break;
-            case Keyboard.TAB:
+            /*case Keyboard.TAB:
                 i = tabbables.index(target);
                 if (event.shiftKey && isTopNavItem && target.hasClass(settings.openClass)) {
                     _togglePanel.call(that, event, true);
@@ -618,7 +655,7 @@ limitations under the License.
                         }
                     }
                 }
-                break;
+                break;*/
             }
             that.justFocused = false;
         };
@@ -711,7 +748,8 @@ limitations under the License.
             init: function () {
                 var settings = this.settings,
                     nav = $(this.element),
-                    menu = nav.children().first(),
+                    //menu = nav.children().first(),
+                    menu = nav,
                     topnavitems = menu.children();
                 this.start(settings, nav, menu, topnavitems);
             },
@@ -722,8 +760,8 @@ limitations under the License.
                 this.menu = menu;
                 this.topnavitems = topnavitems;
 
-                nav.attr("role", "navigation");
-                menu.addClass(settings.menuClass);
+                //nav.attr("role", "navigation");
+                //menu.addClass(settings.menuClass);
                 topnavitems.each(function (i, topnavitem) {
                     var topnavitemlink, topnavitempanel;
                     topnavitem = $(topnavitem);
@@ -735,29 +773,35 @@ limitations under the License.
                         _addUniqueId.call(that, topnavitempanel);
                         topnavitemlink.attr({
                             // "aria-haspopup": true,
-                            "aria-controls": topnavitempanel.attr("id"),
-                            "aria-expanded": false
+                            //"aria-controls": topnavitempanel.attr("id"),
+                            //"aria-expanded": false
                         });
 
                         topnavitempanel.attr({
-                            "role": "region",
-                            "aria-expanded": false,
-                            "aria-hidden": true
+                            //"role": "region",
+                            //"aria-expanded": false,
+                            //"aria-hidden": true
                         })
-                            .addClass(settings.panelClass)
-                            .not("[aria-labelledby]")
-                            .attr("aria-labelledby", topnavitemlink.attr("id"));
+                            //.addClass(settings.panelClass)
+                            //.not("[aria-labelledby]")
+                            //.attr("aria-labelledby", topnavitemlink.attr("id"));
                     }
                 });
 
                 this.panels = menu.find("." + settings.panelClass);
 
-                menu.on("focusin.accessible-megamenu", ":focusable, ." + settings.panelClass, $.proxy(_focusInHandler, this))
+                /*menu.on("focusin.accessible-megamenu", ":focusable, ." + settings.panelClass, $.proxy(_focusInHandler, this))
                     .on("focusout.accessible-megamenu", ":focusable, ." + settings.panelClass, $.proxy(_focusOutHandler, this))
                     .on("keydown.accessible-megamenu", $.proxy(_keyDownHandler, this))
                     .on("mouseover.accessible-megamenu", $.proxy(_mouseOverHandler, this))
                     .on("mouseout.accessible-megamenu", $.proxy(_mouseOutHandler, this))
-                    .on("mousedown.accessible-megamenu", $.proxy(_mouseDownHandler, this));
+                    .on("mousedown.accessible-megamenu", $.proxy(_mouseDownHandler, this));*/
+                menu.on("focusin", ":focusable, ." + settings.panelClass, $.proxy(_focusInHandler, this))
+                    .on("focusout", ":focusable, ." + settings.panelClass, $.proxy(_focusOutHandler, this))
+                    .on("keydown", $.proxy(_keyDownHandler, this))
+                    .on("mouseover", $.proxy(_mouseOverHandler, this))
+                    .on("mouseout", $.proxy(_mouseOutHandler, this))
+                    .on("mousedown", $.proxy(_mouseDownHandler, this));
 
                 if (isTouch) {
                     menu.on("touchstart.accessible-megamenu",  $.proxy(_clickHandler, this));
