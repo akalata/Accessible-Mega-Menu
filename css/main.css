@@ -22,7 +22,7 @@ body
     height: 100%;
     width: 100%;
 }
-
+/*
 html
 {
     font-size: 13px;
@@ -90,7 +90,7 @@ h2
   -ms-transition: none !important;
   -o-transition: none !important;
 }
-
+*/
 :link{
     color: #225FD7;
     text-decoration: none;

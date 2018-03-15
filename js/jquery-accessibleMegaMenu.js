@@ -52,7 +52,7 @@ limitations under the License.
             menuClass: "accessible-megamenu", // default css class used to define the megamenu styling
             topNavItemClass: "accessible-megamenu-top-nav-item", // default css class for a top-level navigation item in the megamenu
             panelClass: "accessible-megamenu-panel", // default css class for a megamenu panel
-            panelGroupClass: "accessible-megamenu-panel-group", // default css class for a group of items within a megamenu panel
+            //panelGroupClass: "accessible-megamenu-panel-group", // default css class for a group of items within a megamenu panel
             hoverClass: "hover", // default css class for the hover state
             focusClass: "focus", // default css class for the focus state
             openClass: "open", // default css class for the open state
@@ -258,17 +258,18 @@ limitations under the License.
                 }
             } else {
                 clearTimeout(that.focusTimeoutID);
-                topli.siblings()
-                    .find('[aria-expanded]')
-                    .attr('aria-expanded', 'false')
+                topli.parent('ul').siblings().find('li')
+                    //.find('[aria-expanded]')
+                    //.attr('aria-expanded', 'false')
                     .removeClass(settings.openClass)
-                    .filter('.' + settings.panelClass)
-                    .attr('aria-hidden', 'true');
-                topli.find('[aria-expanded]')
-                    .attr('aria-expanded', 'true')
+                    //.filter('.' + settings.panelClass)
+                    //.attr('aria-hidden', 'true');
+                topli
+                    //.find('[aria-expanded]')
+                    //.attr('aria-expanded', 'true')
                     .addClass(settings.openClass)
-                    .filter('.' + settings.panelClass)
-                    .attr('aria-hidden', 'false');
+                    //.filter('.' + settings.panelClass)
+                    //.attr('aria-hidden', 'false');
                 if (event.type === 'mouseover' && target.is(':tabbable') && topli.length === 1 && panel.length === 0 && menu.has(document.activeElement).length > 0) {
                     target.focus();
                     that.justFocused = false;
@@ -456,7 +457,10 @@ limitations under the License.
                 event.preventDefault();
 
                 // Only allow DOWN when changing menu levels
-                if (target.next('ul').length === 1) {
+                if (isTopNavItem) {
+                    _togglePanel.call(that, event);
+                    found = (target.next('ul').children(':first-child').children('a').focus().length === 1);
+                } else if (target.next('ul').length === 1) {
                     found = (target.next('ul').children(':first-child').children('a').focus().length === 1);
                 }
 
